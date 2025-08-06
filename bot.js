@@ -8,7 +8,7 @@ const client = new Client({
     puppeteer: {
         headless: true,
         // executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-        executablePath: '/usr/bin/google-chrome', // PROD
+        executablePath: '/usr/bin/chromium', // PROD
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -16,6 +16,7 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
+            '--single-process',
             '--disable-gpu'
         ]
     }
