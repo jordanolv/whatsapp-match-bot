@@ -8,6 +8,7 @@ const client = new Client({
     puppeteer: {
         headless: true,
         // executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        executablePath: '/usr/bin/google-chrome', // PROD
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -103,7 +104,7 @@ class Match {
         if (this.status === 'full') {
             msg += `\n✅ *COMPLET !*`;
         } else {
-            msg += `\n💬 _Tape /rejoindre ${this.id} pour participer_`;
+            msg += `\n💬 _Tape /rj ${this.id} pour participer_`;
         }
         
         return msg;
@@ -127,13 +128,13 @@ client.on('message_create', async (msg) => {
         const parts = msg.body.split(' ').slice(1);
         
         if (parts.length < 2) {
-            await msg.reply('❌ Format: /padel [date] [heure]\nExemple: /padel jeudi 18h');
+            await msg.reply('❌ Format: /padel [date] [heure]\nExemple: /padel 12/08 18h');
             return;
         }
         
         const date = parts[0];
         const time = parts[1];
-        const matchId = Date.now().toString().slice(-6); // ID court
+        const matchId = Date.now().toString().slice(-4);
         
         const match = new Match(matchId, sender, date, time, chat.id._serialized);
         matches.set(matchId, match);
@@ -162,11 +163,11 @@ client.on('message_create', async (msg) => {
     }
     
     // === REJOINDRE UN MATCH ===
-    else if (command.startsWith('/rejoindre')) {
+    else if (command.startsWith('/rj')) {
         const matchId = command.split(' ')[1];
         
         if (!matchId) {
-            await msg.reply('❌ Format: /rejoindre [ID]\nExemple: /rejoindre 123456');
+            await msg.reply('❌ Format: /rj [ID]\nExemple: /rj 1234');
             return;
         }
         
@@ -235,14 +236,14 @@ client.on('message_create', async (msg) => {
     else if (command === '/aide' || command === '/help') {
         const help = `🎾 *BOT PADEL - COMMANDES*
 
-/padel [date] [heure] - Créer un match
+/padel [JJ/MM] [heure] - Créer un match
 /liste - Voir tous les matchs
-/rejoindre [ID] - Rejoindre un match  
+/rj [ID] - Rejoindre un match  
 /quitter [ID] - Quitter un match
 /annuler [ID] - Annuler (créateur only)
 /aide - Afficher cette aide
 
-_Exemple: /padel jeudi 18h_`;
+_Exemple: /padel 12/08 18h_`;
         
         await msg.reply(help);
     }
@@ -261,9 +262,9 @@ client.on('ready', () => {
     console.log('✅ Bot WhatsApp connecté et prêt !');
     console.log('');
     console.log('📝 Commandes disponibles:');
-    console.log('  /padel [date] [heure] - Créer un match');
+    console.log('  /padel [JJ/MM] [heure] - Créer un match');
     console.log('  /liste - Voir les matchs');
-    console.log('  /rejoindre [id] - Rejoindre un match');
+    console.log('  /rj [id] - Rejoindre un match');
     console.log('  /quitter [id] - Quitter un match');
     console.log('  /aide - Afficher l\'aide');
     console.log('');
