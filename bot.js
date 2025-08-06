@@ -113,7 +113,7 @@ class Match {
 }
 
 // Gérer les messages reçus
-client.on('message_create', async (msg) => {
+client.on('message', async (msg) => {
     const chat = await msg.getChat();
     const contact = await msg.getContact();
     const sender = contact.pushname || contact.number;
@@ -135,7 +135,10 @@ client.on('message_create', async (msg) => {
         
         const date = parts[0];
         const time = parts[1];
-        const matchId = Date.now().toString().slice(-4);
+        let matchId = Date.now().toString().slice(-2);
+        while (matches.has(matchId)) {
+            matchId = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+        }
         
         const match = new Match(matchId, sender, date, time, chat.id._serialized);
         matches.set(matchId, match);
@@ -168,7 +171,7 @@ client.on('message_create', async (msg) => {
         const matchId = command.split(' ')[1];
         
         if (!matchId) {
-            await msg.reply('❌ Format: /rj [ID]\nExemple: /rj 1234');
+            await msg.reply('❌ Format: /rj [ID]\nExemple: /rj 12');
             return;
         }
         
