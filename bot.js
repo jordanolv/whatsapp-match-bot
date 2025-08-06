@@ -16,7 +16,6 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
             '--disable-gpu'
         ]
     }
@@ -236,12 +235,28 @@ client.on('message', async (msg) => {
         await msg.reply(`❌ Match ${matchId} annulé par ${sender}`);
     }
     
+    // === RAPPEL ===
+    else if (command === '/rappel') {
+        const chatMatches = Array.from(matches.values())
+            .filter(m => m.chatId === chat.id._serialized && m.status !== 'cancelled');
+        
+        if (chatMatches.length === 0) {
+            await msg.reply('📋 Aucun match programmé\n\n_Crée un match avec /padel [JJ/MM] [heure]_');
+            return;
+        }
+        
+        for (const match of chatMatches) {
+            await msg.reply(match.formatMessage());
+        }
+    }
+    
     // === AIDE ===
     else if (command === '/aide' || command === '/help') {
         const help = `🎾 *BOT PADEL - COMMANDES*
 
 /padel [JJ/MM] [heure] - Créer un match
 /liste - Voir tous les matchs
+/rappel - Afficher matchs complets
 /rj [ID] - Rejoindre un match  
 /quitter [ID] - Quitter un match
 /annuler [ID] - Annuler (créateur only)
